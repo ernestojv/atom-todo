@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CardComponent } from '../components/card/card.component';
 import { TaskCardComponent } from '../components/task-card/task-card.component';
-import { Task } from '../models/task.model';
+import { Task } from '../../../core/models/task.model';
 import { HeaderComponent } from '../../shared/header/header.component';
 
 @Component({

@@ -1,3 +1,4 @@
+<!-- login.component.html -->
 <section class="min-h-screen flex items-center justify-center p-4">
   <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-md space-y-6">
     <div class="text-center">
@@ -7,15 +8,54 @@
       <p class="text-2xl font-bold">Atom - TODO</p>
       <p>Ingresa tu correo electrónico para acceder a tus tareas</p>
     </div>
-    <div class="space-y-4">
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
       <div class="space-y-2">
         <div class="relative">
-          <input class="w-full bg-white border-2 h-12 p-4 rounded border-gray-100" type="email" placeholder="email@todo.com" />
+          <input
+            class="w-full bg-white border-2 h-12 p-4 rounded transition-colors"
+            [class]="hasFieldError('email') ? 'border-red-300 focus:border-red-500' : 'border-gray-100 focus:border-blue-500'"
+            type="email"
+            placeholder="email@todo.com"
+            formControlName="email"
+            autocomplete="email"
+            (input)="clearError()"
+          />
+        </div>
+
+        <!-- Mensajes de validación -->
+        <div *ngIf="hasFieldError('email')" class="text-red-500 text-sm px-2">
+          <span *ngIf="hasFieldError('email', 'required')">El email es requerido</span>
+          <span *ngIf="hasFieldError('email', 'email')">Por favor ingresa un email válido</span>
         </div>
       </div>
-      <button class="w-full bg-gray-400 text-white py-2 rounded hover:bg-gray-500 transition-colors cursor-pointer">
-        Iniciar sesión
+
+      <!-- Mensaje de error general -->
+      <div *ngIf="errorMessage && !isLoading" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+        <span class="block sm:inline">{{ errorMessage }}</span>
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="isLoading"
+        class="w-full py-3 rounded transition-colors font-medium"
+        [class]="isLoading ? 'bg-gray-300 text-gray-00 cursor-not-allowed' : 'bg-blue-200 text-gray-900 hover:bg-blue-300 cursor-pointer'"
+      >
+        <span *ngIf="!isLoading">Iniciar sesión</span>
+        <span *ngIf="isLoading" class="flex items-center justify-center space-x-2">
+          <svg class="animate-spin h-4 w-4 text-current" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Verificando...</span>
+        </span>
       </button>
+    </form>
+
+    <div class="text-center">
+      <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded">
+        Si no tienes cuenta, se creará automáticamente con tu email.
+      </p>
     </div>
   </div>
 </section>
