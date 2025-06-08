@@ -23,7 +23,7 @@
         <div>
           <button type="submit"
             class="mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer">
-            Guardar tarea
+            Crear tarea
           </button>
         </div>
       </form>
@@ -40,7 +40,7 @@
           </div>
           @for (task of todoTasks; track task.id) {
           <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"
-            (updateTask)="openTaskToUpdate($event)"></app-task-card>
+            (updateTask)="openTaskToUpdate($event)" (deleteTask)="openTaskToDelete($event)"></app-task-card>
           }
         </div>
 
@@ -51,7 +51,7 @@
           </div>
           @for (task of inProgressTasks; track task.id) {
           <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"
-            (updateTask)="openTaskToUpdate($event)"></app-task-card>
+            (updateTask)="openTaskToUpdate($event)" (deleteTask)="openTaskToDelete($event)"></app-task-card>
           }
         </div>
 
@@ -62,7 +62,7 @@
           </div>
           @for (task of doneTasks; track task.id) {
           <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"
-            (updateTask)="openTaskToUpdate($event)"></app-task-card>
+            (updateTask)="openTaskToUpdate($event)" (deleteTask)="openTaskToDelete($event)"></app-task-card>
           }
         </div>
 
@@ -72,5 +72,9 @@
   @if(showUpdateTaskModal) {
   {{taskToUpdate}}
   <app-update-task-modal [taskToUpdate]="taskToUpdate" (closeModal)="closeUpdateTaskModal($event)"></app-update-task-modal>
+  }
+
+  @if(showDeleteTaskModal) {
+  <app-delete-task-modal [taskToDelete]="taskToDelete" (closeModal)="closeDeleteTaskModal($event)"></app-delete-task-modal>
   }
 </div>

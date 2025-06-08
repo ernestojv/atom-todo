@@ -13,6 +13,7 @@ export class TaskCardComponent {
   @Input() task!: Task;
   @Output() statusChanged = new EventEmitter<{ id: string, status: string }>();
   @Output() updateTask = new EventEmitter<Task>();
+  @Output() deleteTask = new EventEmitter<Task>();
   private readonly taskService = inject(TaskService);
   showStatusMenu = false;
 
@@ -68,5 +69,9 @@ export class TaskCardComponent {
 
   emitUpdateTask() {
     this.updateTask.emit(this.task);
+  }
+
+  emitDeleteTask() {
+    this.deleteTask.emit(this.task);
   }
 }

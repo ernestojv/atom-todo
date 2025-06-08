@@ -50,6 +50,12 @@ export class TaskService {
     });
   }
 
+  deleteTask(taskId: string): Observable<CreateTaskResponse> {
+    return this.http.delete<CreateTaskResponse>(`${this.API_URL}/task/${taskId}`, {
+      headers: this.getHeaders()
+    });
+  }
+
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',

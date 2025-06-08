@@ -1,0 +1,24 @@
+<div class="w-full h-full flex items-center justify-center absolute top-0 left-0 bg-black/50 backdrop-blur-sm z-50">
+  <app-card class="w-full max-w-md p-6">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-semibold">Eliminar tarea</h2>
+      <button (click)="closeModal.emit()"
+        class="px-4 py-2 rounded-lg cursor-pointer border-1 border-gray-200">X</button>
+    </div>
+    <div>
+      <p class="text-gray-800">¿Estás seguro de que quieres eliminar la tarea <a class="font-semibold">"{{taskToDelete?.title}}"</a> ? Esta
+        acción no se puede
+        deshacer.</p>
+    </div>
+    <div class="flex justify-end gap-4">
+      <button (click)="closeModal.emit()"
+        class="mt-4 ml-2 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 cursor-pointer">
+        Cancelar
+      </button>
+      <button (click)="onDeleteTask()"
+        class="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 cursor-pointer">
+        Eliminar tarea
+      </button>
+    </div>
+  </app-card>
+</div>

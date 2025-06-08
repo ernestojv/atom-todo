@@ -7,10 +7,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TaskService } from '../../../core/services/task.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UpdateTaskModalComponent } from '../components/update-task-modal/update-task-modal.component';
+import { DeleteTaskModalComponent } from '../components/delete-task-modal/delete-task-modal.component';
 
 @Component({
   selector: 'app-task',
-  imports: [CardComponent, TaskCardComponent, HeaderComponent, ReactiveFormsModule, UpdateTaskModalComponent],
+  imports: [CardComponent, TaskCardComponent, HeaderComponent, ReactiveFormsModule, UpdateTaskModalComponent, DeleteTaskModalComponent],
   templateUrl: './task.component.html',
   styleUrl: './task.component.scss'
 })
@@ -29,6 +30,9 @@ export class TaskComponent {
 
   taskToUpdate: Task | null = null;
   showUpdateTaskModal = false;
+
+  taskToDelete: Task | null = null;
+  showDeleteTaskModal = false;
 
   constructor() {
     this.createTaskForm = this.formBuilder.group({
@@ -119,6 +123,24 @@ export class TaskComponent {
     }
 
     this.taskToUpdate = null;
+  }
+
+  openTaskToDelete(task: Task): void {
+    if (task) {
+      this.taskToDelete = task;
+      this.showDeleteTaskModal = true;
+    }
+  }
+
+  closeDeleteTaskModal(deleted: Task | null): void {
+    this.showDeleteTaskModal = false;
+    if (deleted && this.taskToDelete) {
+      this.tasks = this.tasks.filter(t => t.id !== this.taskToDelete?.id);
+      this.todoTasks = this.tasks.filter(task => task.status === 'todo');
+      this.inProgressTasks = this.tasks.filter(task => task.status === 'in_progress');
+      this.doneTasks = this.tasks.filter(task => task.status === 'done');
+    }
+    this.taskToDelete = null;
   }
 
 }
