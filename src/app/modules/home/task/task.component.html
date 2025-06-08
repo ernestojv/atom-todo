@@ -1,80 +1,240 @@
 <app-header></app-header>
+
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Error Message Global -->
+  @if (errorMessage) {
+    <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+      <span class="block sm:inline">{{ errorMessage }}</span>
+      <button (click)="clearError()" class="absolute top-0 bottom-0 right-0 px-4 py-3">
+        <svg class="fill-current h-6 w-6 text-red-500" role="button" viewBox="0 0 20 20">
+          <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.696L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+        </svg>
+      </button>
+    </div>
+  }
+
+  <!-- Task Statistics -->
+  @if (taskStats$ | async; as stats) {
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
+        <div class="text-2xl font-bold text-gray-900">{{ stats.total }}</div>
+        <div class="text-sm text-gray-600">Total</div>
+      </div>
+      <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200">
+        <div class="text-2xl font-bold text-blue-600">{{ stats.todo }}</div>
+        <div class="text-sm text-blue-600">Por Hacer</div>
+      </div>
+      <div class="bg-yellow-50 p-4 rounded-lg shadow-sm border border-yellow-200">
+        <div class="text-2xl font-bold text-yellow-600">{{ stats.inProgress }}</div>
+        <div class="text-sm text-yellow-600">En Progreso</div>
+      </div>
+      <div class="bg-green-50 p-4 rounded-lg shadow-sm border border-green-200">
+        <div class="text-2xl font-bold text-green-600">{{ stats.done }}</div>
+        <div class="text-sm text-green-600">Completadas</div>
+      </div>
+    </div>
+  }
+
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Create Task Form -->
     <app-card>
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-semibold">Nueva Tarea</h2>
-        <!-- <button class="bg-black text-white px-4 py-2 rounded-lg">Agregar tarea</button> -->
       </div>
+
       <form [formGroup]="createTaskForm" (ngSubmit)="onSubmitTask()">
+        <!-- Title Field -->
         <div class="mt-4 flex flex-col gap-2">
-          <label for="taskName" class="block text-md font-medium text-gray-700">Nombre de la tarea</label>
-          <input type="text" id="taskName" name="taskName"
-            class="w-full bg-white border-2 h-12 p-4 rounded border-gray-100"
-            placeholder="Ingrese el nombre de la tarea" formControlName="title" required>
-        </div>
-        <div class="mt-4 flex flex-col gap-2">
-          <label for="taskDescription" class="block text-md font-medium text-gray-700">Descripción</label>
-          <textarea id="taskDescription" name="taskDescription" rows="3"
-            class="w-full bg-white border-2 p-4 rounded border-gray-100"
-            placeholder="Ingrese la descripción de la tarea" formControlName="description"></textarea>
+          <label for="taskName" class="block text-md font-medium text-gray-700">
+            Nombre de la tarea <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="taskName"
+            name="taskName"
+            formControlName="title"
+            required
+            [class]="hasFieldError('title') ?
+              'w-full bg-white border-2 h-12 p-4 rounded border-red-300 focus:border-red-500' :
+              'w-full bg-white border-2 h-12 p-4 rounded border-gray-100 focus:border-blue-500'"
+            placeholder="Ingrese el nombre de la tarea"
+            (input)="clearError()"
+          >
+
+          <!-- Title Validation Messages -->
+          @if (hasFieldError('title')) {
+            <span class="text-red-500 text-sm">{{ getFieldErrorMessage('title') }}</span>
+          }
         </div>
 
+        <!-- Description Field -->
+        <div class="mt-4 flex flex-col gap-2">
+          <label for="taskDescription" class="block text-md font-medium text-gray-700">Descripción</label>
+          <textarea
+            id="taskDescription"
+            name="taskDescription"
+            rows="3"
+            formControlName="description"
+            [class]="hasFieldError('description') ?
+              'w-full bg-white border-2 p-4 rounded border-red-300 focus:border-red-500' :
+              'w-full bg-white border-2 p-4 rounded border-gray-100 focus:border-blue-500'"
+            placeholder="Ingrese la descripción de la tarea"
+            (input)="clearError()"
+          ></textarea>
+
+          <!-- Description Validation Messages -->
+          @if (hasFieldError('description')) {
+            <span class="text-red-500 text-sm">{{ getFieldErrorMessage('description') }}</span>
+          }
+        </div>
+
+        <!-- Submit Button -->
         <div>
-          <button type="submit"
-            class="mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer">
-            Crear tarea
+          <button
+            type="submit"
+            [disabled]="isLoading"
+            [class]="isLoading ?
+              'mt-4 bg-gray-300 text-gray-500 px-4 py-2 rounded-lg cursor-not-allowed' :
+              'mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer'"
+          >
+            @if (isLoading) {
+              <span class="flex items-center justify-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Creando...
+              </span>
+            } @else {
+              Crear tarea
+            }
           </button>
         </div>
       </form>
     </app-card>
+
+    <!-- Tasks Display -->
     <app-card class="lg:col-span-2">
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-semibold">Mis tareas</h2>
+        <button
+          (click)="onRefresh()"
+          class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded transition-colors"
+        >
+          <i class="pi pi-refresh mr-1"></i>
+          Actualizar
+        </button>
       </div>
+
       <div class="flex flex-col gap-4 mt-4">
+        <!-- TODO Tasks -->
         <div class="flex flex-col">
           <div class="flex items-center gap-2 mb-2">
-            <em class="pi pi-circle-on text-gray-200"></em>
+            <em class="pi pi-circle-on text-blue-500"></em>
             <h2 class="text-xl">Por Hacer</h2>
+            @if (todoTasks$ | async; as todoTasks) {
+              <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                {{ todoTasks.length }}
+              </span>
+            }
           </div>
-          @for (task of todoTasks; track task.id) {
-          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"
-            (updateTask)="openTaskToUpdate($event)" (deleteTask)="openTaskToDelete($event)"></app-task-card>
+
+          @if (todoTasks$ | async; as todoTasks) {
+            @if (todoTasks.length > 0) {
+              @for (task of todoTasks; track trackByTaskId($index, task)) {
+                <app-task-card
+                  [task]="task"
+                  (statusChanged)="onTaskStatusChanged($event)"
+                  (updateTask)="openTaskToUpdate($event)"
+                  (deleteTask)="openTaskToDelete($event)"
+                ></app-task-card>
+              }
+            } @else {
+              <div class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                <i class="pi pi-inbox text-2xl mb-2 block"></i>
+                <p>No hay tareas por hacer</p>
+              </div>
+            }
           }
         </div>
 
+        <!-- IN PROGRESS Tasks -->
         <div class="flex flex-col">
           <div class="flex items-center gap-2 mb-2">
-            <em class="pi pi-circle-on text-blue-200"></em>
+            <em class="pi pi-circle-on text-yellow-500"></em>
             <h2 class="text-xl">En Progreso</h2>
+            @if (inProgressTasks$ | async; as inProgressTasks) {
+              <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                {{ inProgressTasks.length }}
+              </span>
+            }
           </div>
-          @for (task of inProgressTasks; track task.id) {
-          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"
-            (updateTask)="openTaskToUpdate($event)" (deleteTask)="openTaskToDelete($event)"></app-task-card>
+
+          @if (inProgressTasks$ | async; as inProgressTasks) {
+            @if (inProgressTasks.length > 0) {
+              @for (task of inProgressTasks; track trackByTaskId($index, task)) {
+                <app-task-card
+                  [task]="task"
+                  (statusChanged)="onTaskStatusChanged($event)"
+                  (updateTask)="openTaskToUpdate($event)"
+                  (deleteTask)="openTaskToDelete($event)"
+                ></app-task-card>
+              }
+            } @else {
+              <div class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                <i class="pi pi-clock text-2xl mb-2 block"></i>
+                <p>No hay tareas en progreso</p>
+              </div>
+            }
           }
         </div>
 
+        <!-- DONE Tasks -->
         <div class="flex flex-col">
           <div class="flex items-center gap-2 mb-2">
-            <em class="pi pi-circle-on text-green-200"></em>
+            <em class="pi pi-circle-on text-green-500"></em>
             <h2 class="text-xl">Terminadas</h2>
+            @if (doneTasks$ | async; as doneTasks) {
+              <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                {{ doneTasks.length }}
+              </span>
+            }
           </div>
-          @for (task of doneTasks; track task.id) {
-          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"
-            (updateTask)="openTaskToUpdate($event)" (deleteTask)="openTaskToDelete($event)"></app-task-card>
+
+          @if (doneTasks$ | async; as doneTasks) {
+            @if (doneTasks.length > 0) {
+              @for (task of doneTasks; track trackByTaskId($index, task)) {
+                <app-task-card
+                  [task]="task"
+                  (statusChanged)="onTaskStatusChanged($event)"
+                  (updateTask)="openTaskToUpdate($event)"
+                  (deleteTask)="openTaskToDelete($event)"
+                ></app-task-card>
+              }
+            } @else {
+              <div class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                <i class="pi pi-check-circle text-2xl mb-2 block"></i>
+                <p>No hay tareas completadas</p>
+              </div>
+            }
           }
         </div>
-
       </div>
     </app-card>
   </div>
-  @if(showUpdateTaskModal) {
-  {{taskToUpdate}}
-  <app-update-task-modal [taskToUpdate]="taskToUpdate" (closeModal)="closeUpdateTaskModal($event)"></app-update-task-modal>
+
+  <!-- Modals -->
+  @if (showUpdateTaskModal) {
+    <app-update-task-modal
+      [taskToUpdate]="taskToUpdate"
+      (closeModal)="closeUpdateTaskModal($event)"
+    ></app-update-task-modal>
   }
 
-  @if(showDeleteTaskModal) {
-  <app-delete-task-modal [taskToDelete]="taskToDelete" (closeModal)="closeDeleteTaskModal($event)"></app-delete-task-modal>
+  @if (showDeleteTaskModal) {
+    <app-delete-task-modal
+      [taskToDelete]="taskToDelete"
+      (closeModal)="closeDeleteTaskModal($event)"
+    ></app-delete-task-modal>
   }
 </div>

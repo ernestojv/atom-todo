@@ -27,3 +27,11 @@ export interface TaskResponse {
   message?: string;
   timestamp?: string;
 }
+
+export type TaskStatus = 'todo' | 'in_progress' | 'done';
+
+export const TASK_STATUS = {
+  TODO: 'todo' as const,
+  IN_PROGRESS: 'in_progress' as const,
+  DONE: 'done' as const
+} as const;
