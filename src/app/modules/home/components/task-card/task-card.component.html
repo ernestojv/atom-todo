@@ -3,12 +3,25 @@
   'bg-blue-50 border-blue-200': task.status == 'in_progress',
   'bg-green-50 border-green-200': task.status == 'done',
 }">
-  <div class="flex justify-center">
+  <div class="flex justify-center relative">
     <em class="pi mt-2 cursor-pointer" [ngClass]="{
       'pi-circle text-gray-500': task.status == 'todo',
       'pi-clock text-blue-600': task.status == 'in_progress',
       'pi-check-circle text-green-600': task.status == 'done'
-    }"></em>
+    }" (click)="toggleStatusMenu()"></em>
+    @if(showStatusMenu){
+    <div class="mt-2 bg-white border rounded shadow p-2 flex flex-col absolute gap-1 z-10 top-8 left-0 w-48">
+      <button class="text-left hover:bg-gray-100 px-2 py-1 rounded" (click)="selectStatus('todo')">
+        <em class="pi pi-circle text-gray-500 mr-2"></em> Por Hacer
+      </button>
+      <button class="text-left hover:bg-gray-100 px-2 py-1 rounded" (click)="selectStatus('in_progress')">
+        <em class="pi pi-clock text-blue-600 mr-2"></em> En Progreso
+      </button>
+      <button class="text-left hover:bg-gray-100 px-2 py-1 rounded" (click)="selectStatus('done')">
+        <em class="pi pi-check-circle text-green-600 mr-2"></em> Terminada
+      </button>
+    </div>
+    }
   </div>
   <div>
     <div class="flex gap-2 items-center">

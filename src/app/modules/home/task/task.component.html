@@ -1,7 +1,7 @@
 <app-header></app-header>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <app-card >
+    <app-card>
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-semibold">Nueva Tarea</h2>
         <!-- <button class="bg-black text-white px-4 py-2 rounded-lg">Agregar tarea</button> -->
@@ -39,7 +39,7 @@
             <h2 class="text-xl">Por Hacer</h2>
           </div>
           @for (task of todoTasks; track task.id) {
-          <app-task-card [task]="task"></app-task-card>
+          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"></app-task-card>
           }
         </div>
 
@@ -49,7 +49,7 @@
             <h2 class="text-xl">En Progreso</h2>
           </div>
           @for (task of inProgressTasks; track task.id) {
-          <app-task-card [task]="task"></app-task-card>
+          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"></app-task-card>
           }
         </div>
 
@@ -59,7 +59,7 @@
             <h2 class="text-xl">Terminadas</h2>
           </div>
           @for (task of doneTasks; track task.id) {
-          <app-task-card [task]="task"></app-task-card>
+          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"></app-task-card>
           }
         </div>
 

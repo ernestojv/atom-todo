@@ -72,7 +72,7 @@ export class TaskComponent {
         next: (tasks) => {
           this.tasks = tasks.data || [];
           this.todoTasks = this.tasks.filter(task => task.status === 'todo');
-          this.inProgressTasks = this.tasks.filter(task => task.status === 'in-progress');
+          this.inProgressTasks = this.tasks.filter(task => task.status === 'in_progress');
           this.doneTasks = this.tasks.filter(task => task.status === 'done');
           this.errorMessage = tasks.message || '';
         },
@@ -80,6 +80,15 @@ export class TaskComponent {
           this.errorMessage = error.message || 'Error al obtener las tareas';
         }
       });
+    }
+  }
+  onTaskStatusChanged(event: { id: string, status: string }) {
+    const task = this.tasks.find(t => t.id === event.id);
+    if (task) {
+      task.status = event.status;
+      this.todoTasks = this.tasks.filter(task => task.status === 'todo');
+      this.inProgressTasks = this.tasks.filter(task => task.status === 'in_progress');
+      this.doneTasks = this.tasks.filter(task => task.status === 'done');
     }
   }
 

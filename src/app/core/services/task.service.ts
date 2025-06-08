@@ -26,6 +26,24 @@ export class TaskService {
     });
   }
 
+  moveToInProgress(taskId: string): Observable<CreateTaskResponse> {
+    return this.http.patch<CreateTaskResponse>(`${this.API_URL}/task/${taskId}/in-progress`, {}, {
+      headers: this.getHeaders()
+    });
+  }
+
+  markAsDone(taskId: string): Observable<CreateTaskResponse> {
+    return this.http.patch<CreateTaskResponse>(`${this.API_URL}/task/${taskId}/done`, {}, {
+      headers: this.getHeaders()
+    });
+  }
+
+  moveBackToTodo(taskId: string): Observable<CreateTaskResponse> {
+    return this.http.patch<CreateTaskResponse>(`${this.API_URL}/task/${taskId}/todo`, {}, {
+      headers: this.getHeaders()
+    });
+  }
+
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',
