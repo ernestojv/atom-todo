@@ -1,12 +1,25 @@
 <app-header></app-header>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" role="main" aria-labelledby="main-title">
+  <h1 id="main-title" class="sr-only">Panel de gestión de tareas</h1>
+
   <!-- Error Message Global -->
   @if (errorMessage) {
-    <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+    <div
+      class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <span class="sr-only">Error: </span>
       <span class="block sm:inline">{{ errorMessage }}</span>
-      <button (click)="clearError()" class="absolute top-0 bottom-0 right-0 px-4 py-3">
-        <svg class="fill-current h-6 w-6 text-red-500" role="button" viewBox="0 0 20 20">
+      <button
+        (click)="clearError()"
+        class="absolute top-0 bottom-0 right-0 px-4 py-3"
+        aria-label="Cerrar mensaje de error"
+        type="button"
+      >
+        <svg class="fill-current h-6 w-6 text-red-500" role="img" aria-hidden="true" viewBox="0 0 20 20">
           <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.696L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
         </svg>
       </button>
@@ -15,212 +28,323 @@
 
   <!-- Task Statistics -->
   @if (taskStats$ | async; as stats) {
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
+    <section
+      class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"
+      role="region"
+      aria-labelledby="stats-title"
+    >
+      <h2 id="stats-title" class="sr-only">Estadísticas de tareas</h2>
+
+      <div class="bg-white p-4 rounded-lg shadow-sm border" role="status" [attr.aria-label]="'Total de tareas: ' + stats.total">
         <div class="text-2xl font-bold text-gray-900">{{ stats.total }}</div>
         <div class="text-sm text-gray-600">Total</div>
       </div>
-      <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200">
+
+      <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200" role="status" [attr.aria-label]="'Tareas por hacer: ' + stats.todo">
         <div class="text-2xl font-bold text-blue-600">{{ stats.todo }}</div>
         <div class="text-sm text-blue-600">Por Hacer</div>
       </div>
-      <div class="bg-yellow-50 p-4 rounded-lg shadow-sm border border-yellow-200">
+
+      <div class="bg-yellow-50 p-4 rounded-lg shadow-sm border border-yellow-200" role="status" [attr.aria-label]="'Tareas en progreso: ' + stats.inProgress">
         <div class="text-2xl font-bold text-yellow-600">{{ stats.inProgress }}</div>
         <div class="text-sm text-yellow-600">En Progreso</div>
       </div>
-      <div class="bg-green-50 p-4 rounded-lg shadow-sm border border-green-200">
+
+      <div class="bg-green-50 p-4 rounded-lg shadow-sm border border-green-200" role="status" [attr.aria-label]="'Tareas completadas: ' + stats.done">
         <div class="text-2xl font-bold text-green-600">{{ stats.done }}</div>
         <div class="text-sm text-green-600">Completadas</div>
       </div>
-    </div>
+    </section>
   }
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Create Task Form -->
-    <app-card>
-      <div class="flex justify-between items-center">
-        <h2 class="text-xl font-semibold">Nueva Tarea</h2>
-      </div>
+    <section role="region" aria-labelledby="create-task-title">
+      <app-card>
+        <header class="flex justify-between items-center">
+          <h2 id="create-task-title" class="text-xl font-semibold">Nueva Tarea</h2>
+        </header>
 
-      <form [formGroup]="createTaskForm" (ngSubmit)="onSubmitTask()">
-        <!-- Title Field -->
-        <div class="mt-4 flex flex-col gap-2">
-          <label for="taskName" class="block text-md font-medium text-gray-700">
-            Nombre de la tarea <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="taskName"
-            name="taskName"
-            formControlName="title"
-            required
-            [class]="hasFieldError('title') ?
-              'w-full bg-white border-2 h-12 p-4 rounded border-red-300 focus:border-red-500' :
-              'w-full bg-white border-2 h-12 p-4 rounded border-gray-100 focus:border-blue-500'"
-            placeholder="Ingrese el nombre de la tarea"
-            (input)="clearError()"
-          >
+        <form
+          [formGroup]="createTaskForm"
+          (ngSubmit)="onSubmitTask()"
+          (keydown)="onFormKeyDown($event)"
+          role="form"
+          aria-labelledby="create-task-title"
+          novalidate
+        >
+          <!-- Title Field -->
+          <div class="mt-4 flex flex-col gap-2">
+            <label for="taskName" class="block text-md font-medium text-gray-700">
+              Nombre de la tarea <span class="text-red-500" aria-label="requerido">*</span>
+            </label>
+            <input
+              #titleInput
+              type="text"
+              id="taskName"
+              name="taskName"
+              formControlName="title"
+              required
+              [class]="hasFieldError('title') ?
+                'w-full bg-white border-2 h-12 p-4 rounded border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200' :
+                'w-full bg-white border-2 h-12 p-4 rounded border-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'"
+              placeholder="Ingrese el nombre de la tarea"
+              [attr.aria-invalid]="hasFieldError('title')"
+              [attr.aria-describedby]="hasFieldError('title') ? 'title-error' : 'title-help'"
+              [attr.aria-required]="true"
+              (input)="clearError()"
+              autocomplete="off"
+            >
 
-          <!-- Title Validation Messages -->
-          @if (hasFieldError('title')) {
-            <span class="text-red-500 text-sm">{{ getFieldErrorMessage('title') }}</span>
-          }
-        </div>
+            <div
+              id="title-help"
+              class="sr-only"
+              *ngIf="!hasFieldError('title')"
+            >
+              Ingresa un nombre descriptivo para tu tarea
+            </div>
 
-        <!-- Description Field -->
-        <div class="mt-4 flex flex-col gap-2">
-          <label for="taskDescription" class="block text-md font-medium text-gray-700">Descripción</label>
-          <textarea
-            id="taskDescription"
-            name="taskDescription"
-            rows="3"
-            formControlName="description"
-            [class]="hasFieldError('description') ?
-              'w-full bg-white border-2 p-4 rounded border-red-300 focus:border-red-500' :
-              'w-full bg-white border-2 p-4 rounded border-gray-100 focus:border-blue-500'"
-            placeholder="Ingrese la descripción de la tarea"
-            (input)="clearError()"
-          ></textarea>
-
-          <!-- Description Validation Messages -->
-          @if (hasFieldError('description')) {
-            <span class="text-red-500 text-sm">{{ getFieldErrorMessage('description') }}</span>
-          }
-        </div>
-
-        <!-- Submit Button -->
-        <div>
-          <button
-            type="submit"
-            [disabled]="isLoading"
-            [class]="isLoading ?
-              'mt-4 bg-gray-300 text-gray-500 px-4 py-2 rounded-lg cursor-not-allowed' :
-              'mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer'"
-          >
-            @if (isLoading) {
-              <span class="flex items-center justify-center">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Creando...
-              </span>
-            } @else {
-              Crear tarea
+            <!-- Title Validation Messages -->
+            @if (hasFieldError('title')) {
+              <div
+                id="title-error"
+                class="text-red-500 text-sm"
+                role="alert"
+                aria-live="polite"
+              >
+                <span class="sr-only">Error: </span>
+                {{ getFieldErrorMessage('title') }}
+              </div>
             }
-          </button>
-        </div>
-      </form>
-    </app-card>
+          </div>
+
+          <!-- Description Field -->
+          <div class="mt-4 flex flex-col gap-2">
+            <label for="taskDescription" class="block text-md font-medium text-gray-700">Descripción</label>
+            <textarea
+              id="taskDescription"
+              name="taskDescription"
+              rows="3"
+              formControlName="description"
+              [class]="hasFieldError('description') ?
+                'w-full bg-white border-2 p-4 rounded border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200' :
+                'w-full bg-white border-2 p-4 rounded border-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'"
+              placeholder="Ingrese la descripción de la tarea"
+              [attr.aria-invalid]="hasFieldError('description')"
+              [attr.aria-describedby]="hasFieldError('description') ? 'description-error' : 'description-help'"
+              (input)="clearError()"
+              autocomplete="off"
+            ></textarea>
+
+            <div
+              id="description-help"
+              class="sr-only"
+              *ngIf="!hasFieldError('description')"
+            >
+              Opcional: Añade detalles adicionales sobre la tarea
+            </div>
+
+            <!-- Description Validation Messages -->
+            @if (hasFieldError('description')) {
+              <div
+                id="description-error"
+                class="text-red-500 text-sm"
+                role="alert"
+                aria-live="polite"
+              >
+                <span class="sr-only">Error: </span>
+                {{ getFieldErrorMessage('description') }}
+              </div>
+            }
+          </div>
+
+          <!-- Submit Button -->
+          <div>
+            <button
+              type="submit"
+              [disabled]="isLoading || createTaskForm.invalid"
+              [class]="(isLoading || createTaskForm.invalid) ?
+                'mt-4 bg-gray-300 text-gray-500 px-4 py-2 rounded-lg cursor-not-allowed focus:ring-2 focus:ring-gray-300' :
+                'mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer'"
+              [attr.aria-disabled]="isLoading || createTaskForm.invalid"
+              [attr.aria-describedby]="isLoading ? 'loading-status' : null"
+            >
+              @if (isLoading) {
+                <span class="flex items-center justify-center" aria-hidden="true">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" role="img" aria-label="Cargando">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creando...
+                </span>
+              } @else {
+                Crear tarea
+              }
+            </button>
+
+            <div
+              id="loading-status"
+              class="sr-only"
+              aria-live="polite"
+              aria-atomic="true"
+              *ngIf="isLoading"
+            >
+              Creando nueva tarea, por favor espere...
+            </div>
+
+            <div class="mt-2 text-xs text-gray-500">
+              <span>Tip: Presiona Ctrl+Enter para crear rápidamente</span>
+            </div>
+          </div>
+        </form>
+      </app-card>
+    </section>
 
     <!-- Tasks Display -->
-    <app-card class="lg:col-span-2">
-      <div class="flex justify-between items-center">
-        <h2 class="text-xl font-semibold">Mis tareas</h2>
-        <button
-          (click)="onRefresh()"
-          class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded transition-colors"
-        >
-          <i class="pi pi-refresh mr-1"></i>
-          Actualizar
-        </button>
-      </div>
+    <section class="lg:col-span-2" role="region" aria-labelledby="tasks-title">
+      <app-card>
+        <header class="flex justify-between items-center">
+          <h2 id="tasks-title" class="text-xl font-semibold">Mis tareas</h2>
+          <button
+            (click)="onRefresh()"
+            class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            aria-label="Actualizar lista de tareas"
+            type="button"
+          >
+            <i class="pi pi-refresh mr-1" aria-hidden="true"></i>
+            Actualizar
+          </button>
+        </header>
 
-      <div class="flex flex-col gap-4 mt-4">
-        <!-- TODO Tasks -->
-        <div class="flex flex-col">
-          <div class="flex items-center gap-2 mb-2">
-            <em class="pi pi-circle-on text-blue-500"></em>
-            <h2 class="text-xl">Por Hacer</h2>
+        <div class="flex flex-col gap-4 mt-4">
+          <!-- TODO Tasks -->
+          <section role="region" aria-labelledby="todo-title">
+            <header class="flex items-center gap-2 mb-2">
+              <em class="pi pi-circle-on text-blue-500" aria-hidden="true"></em>
+              <h3 id="todo-title" class="text-xl">Por Hacer</h3>
+              @if (todoTasks$ | async; as todoTasks) {
+                <span
+                  class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
+                  [attr.aria-label]="todoTasks.length + ' tareas por hacer'"
+                >
+                  {{ todoTasks.length }}
+                </span>
+              }
+            </header>
+
             @if (todoTasks$ | async; as todoTasks) {
-              <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                {{ todoTasks.length }}
-              </span>
-            }
-          </div>
-
-          @if (todoTasks$ | async; as todoTasks) {
-            @if (todoTasks.length > 0) {
-              @for (task of todoTasks; track trackByTaskId($index, task)) {
-                <app-task-card
-                  [task]="task"
-                  (statusChanged)="onTaskStatusChanged($event)"
-                  (updateTask)="openTaskToUpdate($event)"
-                  (deleteTask)="openTaskToDelete($event)"
-                ></app-task-card>
+              @if (todoTasks.length > 0) {
+                <ul role="list" aria-labelledby="todo-title">
+                  @for (task of todoTasks; track trackByTaskId($index, task)) {
+                    <li role="listitem">
+                      <app-task-card
+                        [task]="task"
+                        (statusChanged)="onTaskStatusChanged($event)"
+                        (updateTask)="openTaskToUpdate($event)"
+                        (deleteTask)="openTaskToDelete($event)"
+                      ></app-task-card>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <div
+                  class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200"
+                  role="status"
+                  [attr.aria-label]="'No hay tareas por hacer'"
+                >
+                  <i class="pi pi-inbox text-2xl mb-2 block" aria-hidden="true"></i>
+                  <p>No hay tareas por hacer</p>
+                </div>
               }
-            } @else {
-              <div class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                <i class="pi pi-inbox text-2xl mb-2 block"></i>
-                <p>No hay tareas por hacer</p>
-              </div>
             }
-          }
-        </div>
+          </section>
 
-        <!-- IN PROGRESS Tasks -->
-        <div class="flex flex-col">
-          <div class="flex items-center gap-2 mb-2">
-            <em class="pi pi-circle-on text-yellow-500"></em>
-            <h2 class="text-xl">En Progreso</h2>
+          <!-- IN PROGRESS Tasks -->
+          <section role="region" aria-labelledby="progress-title">
+            <header class="flex items-center gap-2 mb-2">
+              <em class="pi pi-circle-on text-yellow-500" aria-hidden="true"></em>
+              <h3 id="progress-title" class="text-xl">En Progreso</h3>
+              @if (inProgressTasks$ | async; as inProgressTasks) {
+                <span
+                  class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
+                  [attr.aria-label]="inProgressTasks.length + ' tareas en progreso'"
+                >
+                  {{ inProgressTasks.length }}
+                </span>
+              }
+            </header>
+
             @if (inProgressTasks$ | async; as inProgressTasks) {
-              <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                {{ inProgressTasks.length }}
-              </span>
-            }
-          </div>
-
-          @if (inProgressTasks$ | async; as inProgressTasks) {
-            @if (inProgressTasks.length > 0) {
-              @for (task of inProgressTasks; track trackByTaskId($index, task)) {
-                <app-task-card
-                  [task]="task"
-                  (statusChanged)="onTaskStatusChanged($event)"
-                  (updateTask)="openTaskToUpdate($event)"
-                  (deleteTask)="openTaskToDelete($event)"
-                ></app-task-card>
+              @if (inProgressTasks.length > 0) {
+                <ul role="list" aria-labelledby="progress-title">
+                  @for (task of inProgressTasks; track trackByTaskId($index, task)) {
+                    <li role="listitem">
+                      <app-task-card
+                        [task]="task"
+                        (statusChanged)="onTaskStatusChanged($event)"
+                        (updateTask)="openTaskToUpdate($event)"
+                        (deleteTask)="openTaskToDelete($event)"
+                      ></app-task-card>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <div
+                  class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200"
+                  role="status"
+                  [attr.aria-label]="'No hay tareas en progreso'"
+                >
+                  <i class="pi pi-clock text-2xl mb-2 block" aria-hidden="true"></i>
+                  <p>No hay tareas en progreso</p>
+                </div>
               }
-            } @else {
-              <div class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                <i class="pi pi-clock text-2xl mb-2 block"></i>
-                <p>No hay tareas en progreso</p>
-              </div>
             }
-          }
-        </div>
+          </section>
 
-        <!-- DONE Tasks -->
-        <div class="flex flex-col">
-          <div class="flex items-center gap-2 mb-2">
-            <em class="pi pi-circle-on text-green-500"></em>
-            <h2 class="text-xl">Terminadas</h2>
+          <!-- DONE Tasks -->
+          <section role="region" aria-labelledby="done-title">
+            <header class="flex items-center gap-2 mb-2">
+              <em class="pi pi-circle-on text-green-500" aria-hidden="true"></em>
+              <h3 id="done-title" class="text-xl">Terminadas</h3>
+              @if (doneTasks$ | async; as doneTasks) {
+                <span
+                  class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
+                  [attr.aria-label]="doneTasks.length + ' tareas completadas'"
+                >
+                  {{ doneTasks.length }}
+                </span>
+              }
+            </header>
+
             @if (doneTasks$ | async; as doneTasks) {
-              <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                {{ doneTasks.length }}
-              </span>
-            }
-          </div>
-
-          @if (doneTasks$ | async; as doneTasks) {
-            @if (doneTasks.length > 0) {
-              @for (task of doneTasks; track trackByTaskId($index, task)) {
-                <app-task-card
-                  [task]="task"
-                  (statusChanged)="onTaskStatusChanged($event)"
-                  (updateTask)="openTaskToUpdate($event)"
-                  (deleteTask)="openTaskToDelete($event)"
-                ></app-task-card>
+              @if (doneTasks.length > 0) {
+                <ul role="list" aria-labelledby="done-title">
+                  @for (task of doneTasks; track trackByTaskId($index, task)) {
+                    <li role="listitem">
+                      <app-task-card
+                        [task]="task"
+                        (statusChanged)="onTaskStatusChanged($event)"
+                        (updateTask)="openTaskToUpdate($event)"
+                        (deleteTask)="openTaskToDelete($event)"
+                      ></app-task-card>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <div
+                  class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200"
+                  role="status"
+                  [attr.aria-label]="'No hay tareas completadas'"
+                >
+                  <i class="pi pi-check-circle text-2xl mb-2 block" aria-hidden="true"></i>
+                  <p>No hay tareas completadas</p>
+                </div>
               }
-            } @else {
-              <div class="text-gray-500 text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                <i class="pi pi-check-circle text-2xl mb-2 block"></i>
-                <p>No hay tareas completadas</p>
-              </div>
             }
-          }
+          </section>
         </div>
-      </div>
-    </app-card>
+      </app-card>
+    </section>
   </div>
 
   <!-- Modals -->
@@ -237,4 +361,14 @@
       (closeModal)="closeDeleteTaskModal($event)"
     ></app-delete-task-modal>
   }
+</main>
+
+<!-- Región para anuncios de estado global -->
+<div
+  aria-live="polite"
+  aria-atomic="true"
+  class="sr-only"
+  role="status"
+>
+  {{ statusMessage }}
 </div>
