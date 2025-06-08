@@ -1,61 +1,171 @@
-<!-- login.component.html -->
-<section class="min-h-screen flex items-center justify-center p-4">
+<section
+  class="min-h-screen flex items-center justify-center p-4"
+  role="main"
+  aria-labelledby="login-title"
+>
   <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-md space-y-6">
-    <div class="text-center">
-      <div class="mx-auto mb-4 w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center">
+    <header class="text-center" role="banner">
+      <div
+        class="mx-auto mb-4 w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center"
+        aria-hidden="true"
+      >
         <em class="pi pi-check-square font-semibold"></em>
       </div>
-      <p class="text-2xl font-bold">Atom - TODO</p>
-      <p>Ingresa tu correo electrónico para acceder a tus tareas</p>
-    </div>
+      <h1 id="login-title" class="text-2xl font-bold">Atom - TODO</h1>
+      <p class="text-gray-600">Ingresa tu correo electrónico para acceder a tus tareas</p>
+    </header>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+      class="space-y-4"
+      role="form"
+      aria-labelledby="login-title"
+      novalidate
+    >
       <div class="space-y-2">
+        <label for="email-input" class="sr-only">
+          Correo electrónico
+        </label>
+
         <div class="relative">
           <input
+            #emailInput
+            id="email-input"
             class="w-full bg-white border-2 h-12 p-4 rounded transition-colors"
-            [class]="hasFieldError('email') ? 'border-red-300 focus:border-red-500' : 'border-gray-100 focus:border-blue-500'"
+            [class]="hasFieldError('email') ?
+              'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200' :
+              'border-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'"
             type="email"
             placeholder="email@todo.com"
             formControlName="email"
             autocomplete="email"
+            [attr.aria-invalid]="hasFieldError('email')"
+            [attr.aria-describedby]="hasFieldError('email') ? 'email-error' : 'email-help'"
+            [attr.aria-required]="true"
             (input)="clearError()"
+            (keydown)="onEmailKeyDown($event)"
           />
         </div>
 
-        <!-- Mensajes de validación -->
-        <div *ngIf="hasFieldError('email')" class="text-red-500 text-sm px-2">
-          <span *ngIf="hasFieldError('email', 'required')">El email es requerido</span>
-          <span *ngIf="hasFieldError('email', 'email')">Por favor ingresa un email válido</span>
+        <div
+          id="email-help"
+          class="sr-only"
+          *ngIf="!hasFieldError('email')"
+        >
+          Ingresa tu dirección de correo electrónico para iniciar sesión
+        </div>
+
+        <div
+          id="email-error"
+          class="text-red-500 text-sm px-2"
+          role="alert"
+          aria-live="polite"
+          *ngIf="hasFieldError('email')"
+        >
+          <span *ngIf="hasFieldError('email', 'required')">
+            <span class="sr-only">Error: </span>
+            El email es requerido
+          </span>
+          <span *ngIf="hasFieldError('email', 'email')">
+            <span class="sr-only">Error: </span>
+            Por favor ingresa un email válido
+          </span>
         </div>
       </div>
 
-      <!-- Mensaje de error general -->
-      <div *ngIf="errorMessage && !isLoading" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+      <div
+        *ngIf="errorMessage && !isLoading"
+        class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <span class="sr-only">Error: </span>
         <span class="block sm:inline">{{ errorMessage }}</span>
+        <button
+          type="button"
+          class="absolute top-0 bottom-0 right-0 px-4 py-3"
+          aria-label="Cerrar mensaje de error"
+          (click)="clearError()"
+        >
+          <svg class="fill-current h-4 w-4 text-red-500" role="img" aria-hidden="true" viewBox="0 0 20 20">
+            <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.696L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+          </svg>
+        </button>
       </div>
 
       <button
         type="submit"
-        [disabled]="isLoading"
-        class="w-full py-3 rounded transition-colors font-medium"
-        [class]="isLoading ? 'bg-gray-300 text-gray-00 cursor-not-allowed' : 'bg-blue-200 text-gray-900 hover:bg-blue-300 cursor-pointer'"
+        [disabled]="isLoading || loginForm.invalid"
+        class="w-full py-3 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-offset-2"
+        [class]="(isLoading || loginForm.invalid) ?
+          'bg-gray-300 text-gray-500 cursor-not-allowed focus:ring-gray-300' :
+          'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer focus:ring-blue-500'"
+        [attr.aria-disabled]="isLoading || loginForm.invalid"
+        [attr.aria-describedby]="isLoading ? 'loading-status' : null"
+        (keydown)="onSubmitKeyDown($event)"
       >
-        <span *ngIf="!isLoading">Iniciar sesión</span>
-        <span *ngIf="isLoading" class="flex items-center justify-center space-x-2">
-          <svg class="animate-spin h-4 w-4 text-current" fill="none" viewBox="0 0 24 24">
+        <span *ngIf="!isLoading">
+          Iniciar sesión
+        </span>
+
+        <span
+          *ngIf="isLoading"
+          class="flex items-center justify-center space-x-2"
+          aria-hidden="true"
+        >
+          <svg
+            class="animate-spin h-4 w-4 text-current"
+            fill="none"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-label="Cargando"
+          >
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
           <span>Verificando...</span>
         </span>
       </button>
+
+      <div
+        id="loading-status"
+        class="sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+        *ngIf="isLoading"
+      >
+        Verificando credenciales, por favor espere...
+      </div>
     </form>
 
-    <div class="text-center">
-      <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded">
-        Si no tienes cuenta, se creará automáticamente con tu email.
-      </p>
-    </div>
+    <footer class="text-center" role="contentinfo">
+      <div
+        class="text-sm text-gray-600 bg-gray-50 p-3 rounded"
+        role="note"
+        aria-label="Información sobre el registro automático"
+      >
+        <p>
+          Si no tienes cuenta, se creará automáticamente con tu email.
+        </p>
+      </div>
+    </footer>
+
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded z-50"
+    >
+      Saltar al contenido principal
+    </a>
   </div>
 </section>
+
+<div
+  aria-live="polite"
+  aria-atomic="true"
+  class="sr-only"
+  role="status"
+>
+  {{ statusMessage }}
+</div>
