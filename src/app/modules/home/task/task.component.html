@@ -39,7 +39,8 @@
             <h2 class="text-xl">Por Hacer</h2>
           </div>
           @for (task of todoTasks; track task.id) {
-          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"></app-task-card>
+          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"
+            (updateTask)="openTaskToUpdate($event)"></app-task-card>
           }
         </div>
 
@@ -49,7 +50,8 @@
             <h2 class="text-xl">En Progreso</h2>
           </div>
           @for (task of inProgressTasks; track task.id) {
-          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"></app-task-card>
+          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"
+            (updateTask)="openTaskToUpdate($event)"></app-task-card>
           }
         </div>
 
@@ -59,11 +61,16 @@
             <h2 class="text-xl">Terminadas</h2>
           </div>
           @for (task of doneTasks; track task.id) {
-          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"></app-task-card>
+          <app-task-card [task]="task" (statusChanged)="onTaskStatusChanged($event)"
+            (updateTask)="openTaskToUpdate($event)"></app-task-card>
           }
         </div>
 
       </div>
     </app-card>
   </div>
+  @if(showUpdateTaskModal) {
+  {{taskToUpdate}}
+  <app-update-task-modal [taskToUpdate]="taskToUpdate" (closeModal)="closeUpdateTaskModal($event)"></app-update-task-modal>
+  }
 </div>

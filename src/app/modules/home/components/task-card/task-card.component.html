@@ -26,13 +26,13 @@
   <div>
     <div class="flex gap-2 items-center">
       <h2 class="font-semibold text-md">{{task.title}}</h2>
-      <p class="text-gray-500 border-1 rounded-2xl px-2 py-1">{{task.status}}</p>
+      <p class="text-gray-500 border-1 rounded-lg px-2 py-1 text-sm">{{task.status}}</p>
     </div>
     <p>{{task.description}}</p>
     <p class="text-gray-500">{{task.createdAt | date}}</p>
   </div>
   <div class="flex gap-3 mt-2 mr-4 flex-col sm:flex-row items-end md:items-center justify-center">
-    <em class="pi pi-pen-to-square cursor-pointer"></em>
+    <em (click)="emitUpdateTask()" class="pi pi-pen-to-square cursor-pointer"></em>
     <em class="pi pi-trash text-red-500 cursor-pointer"></em>
   </div>
 </div>

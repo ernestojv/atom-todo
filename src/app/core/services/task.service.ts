@@ -44,6 +44,12 @@ export class TaskService {
     });
   }
 
+  updateTask(task: Task): Observable<CreateTaskResponse> {
+    return this.http.put<CreateTaskResponse>(`${this.API_URL}/task/${task.id}`, task, {
+      headers: this.getHeaders()
+    });
+  }
+
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',

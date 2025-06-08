@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, input, Output } from '@angular/core';
 import { TaskService } from '../../../../core/services/task.service';
+import { Task } from '../../../../core/models/task.model';
 
 @Component({
   selector: 'app-task-card',
@@ -9,8 +10,9 @@ import { TaskService } from '../../../../core/services/task.service';
   styleUrl: './task-card.component.scss'
 })
 export class TaskCardComponent {
-  @Input() task: any;
+  @Input() task!: Task;
   @Output() statusChanged = new EventEmitter<{ id: string, status: string }>();
+  @Output() updateTask = new EventEmitter<Task>();
   private readonly taskService = inject(TaskService);
   showStatusMenu = false;
 
@@ -62,5 +64,9 @@ export class TaskCardComponent {
     }
 
     this.showStatusMenu = false;
+  }
+
+  emitUpdateTask() {
+    this.updateTask.emit(this.task);
   }
 }

@@ -6,10 +6,11 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TaskService } from '../../../core/services/task.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { UpdateTaskModalComponent } from '../components/update-task-modal/update-task-modal.component';
 
 @Component({
   selector: 'app-task',
-  imports: [CardComponent, TaskCardComponent, HeaderComponent, ReactiveFormsModule],
+  imports: [CardComponent, TaskCardComponent, HeaderComponent, ReactiveFormsModule, UpdateTaskModalComponent],
   templateUrl: './task.component.html',
   styleUrl: './task.component.scss'
 })
@@ -25,6 +26,9 @@ export class TaskComponent {
   todoTasks: Task[] = [];
   inProgressTasks: Task[] = [];
   doneTasks: Task[] = [];
+
+  taskToUpdate: Task | null = null;
+  showUpdateTaskModal = false;
 
   constructor() {
     this.createTaskForm = this.formBuilder.group({
@@ -90,6 +94,31 @@ export class TaskComponent {
       this.inProgressTasks = this.tasks.filter(task => task.status === 'in_progress');
       this.doneTasks = this.tasks.filter(task => task.status === 'done');
     }
+  }
+
+  openTaskToUpdate(task: Task): void {
+    if (task) {
+      this.taskToUpdate = task;
+      console.log('Task to update:', this.taskToUpdate);
+      this.showUpdateTaskModal = true;
+    }
+  }
+
+  closeUpdateTaskModal(updatedTask: Task): void {
+    this.showUpdateTaskModal = false;
+
+    const task = this.tasks.find(t => t.id === this.taskToUpdate?.id);
+    if (task) {
+      task.title = updatedTask.title;
+      task.description = updatedTask.description;
+      task.status = updatedTask.status;
+
+      this.todoTasks = this.tasks.filter(task => task.status === 'todo');
+      this.inProgressTasks = this.tasks.filter(task => task.status === 'in_progress');
+      this.doneTasks = this.tasks.filter(task => task.status === 'done');
+    }
+
+    this.taskToUpdate = null;
   }
 
 }

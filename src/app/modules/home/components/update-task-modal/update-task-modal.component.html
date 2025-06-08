@@ -1,0 +1,29 @@
+<div class="w-full h-full flex items-center justify-center absolute top-0 left-0 bg-black/50 backdrop-blur-sm z-50">
+  <app-card class="w-full max-w-md p-6">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-semibold">Actualizar tarea</h2>
+      <button (click)="closeModal.emit()" class="px-4 py-2 rounded-lg cursor-pointer border-1 border-gray-200">X</button>
+    </div>
+    <form [formGroup]="updateTaskForm" (ngSubmit)="onUpdateTask()">
+      <div class="mt-4 flex flex-col gap-2">
+        <label for="taskName" class="block text-md font-medium text-gray-700">Nombre de la tarea</label>
+        <input type="text" id="taskName" name="taskName"
+          class="w-full bg-white border-2 h-12 p-4 rounded border-gray-100" placeholder="Ingrese el nombre de la tarea"
+          formControlName="title" required>
+      </div>
+      <div class="mt-4 flex flex-col gap-2">
+        <label for="taskDescription" class="block text-md font-medium text-gray-700">Descripción</label>
+        <textarea id="taskDescription" name="taskDescription" rows="3"
+          class="w-full bg-white border-2 p-4 rounded border-gray-100" placeholder="Ingrese la descripción de la tarea"
+          formControlName="description"></textarea>
+      </div>
+
+      <div>
+        <button type="submit"
+          class="mt-4 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer">
+          Actualizar tarea
+        </button>
+      </div>
+    </form>
+  </app-card>
+</div>
