@@ -129,7 +129,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.createUser(email);
       }
       document.removeEventListener('keydown', keyHandler);
-    }, 5000);
+    }, 1);
   }
 
   private createUser(email: string): void {
