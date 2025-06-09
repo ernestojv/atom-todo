@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/atom-todo",
+    "public": "dist/atom-todo/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
