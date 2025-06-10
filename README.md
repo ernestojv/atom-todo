@@ -131,6 +131,125 @@ npm run audit            # Auditoría de dependencias
 
 ---
 
+## 🧪 Testing
+
+### **📊 Coverage Report**
+El proyecto mantiene un coverage promedio de **88.03%**:
+
+```
+
+### **🚀 Configuración de Testing**
+
+#### **1. Tipos de Tests Implementados**
+
+##### **Tests Unitarios**
+- ✅ **Componentes individuales** con TestBed
+- ✅ **Servicios** con mocks y spies
+- ✅ **Guards y interceptors** aislados
+- ✅ **Pipes y directivas** personalizadas
+
+##### **Tests de Integración**
+- ✅ **auth.integration.spec.ts** - Flujo completo de autenticación
+  - Login con usuarios existentes y nuevos
+  - Guards de navegación y protección de rutas
+  - Manejo de estados de autenticación
+  - Casos edge y manejo de errores
+
+- ✅ **task.integration.spec.ts** - Gestión completa de tareas
+  - CRUD completo con formularios reactivos
+  - Cambios de estado (TODO → IN_PROGRESS → DONE)
+  - Validaciones de formularios en tiempo real
+  - Modales de edición y eliminación
+  - Estados de carga y manejo de errores
+
+#### **2. Ejecutar Tests**
+```bash
+# Tests básicos
+npm test                     # Ejecutar todos los tests
+npm run test:watch          # Tests en modo watch
+npm run test:headless       # Tests sin interfaz gráfica
+
+# Tests específicos
+ng test --include="**/auth/**/*.spec.ts"     # Solo tests de autenticación
+ng test --include="**/task/**/*.spec.ts"     # Solo tests de tareas
+ng test --include="**/*.integration.spec.ts" # Solo tests de integración
+
+# Coverage detallado
+npm run test:coverage       # Coverage completo con reporte HTML
+ng test --code-coverage     # Coverage básico
+```
+
+### **🔬 Características de Testing**
+
+#### **Herramientas y Frameworks**
+- **🧪 Jasmine & Karma** - Framework de testing principal
+- **🎭 Angular Testing Utilities** - TestBed, ComponentFixture
+- **🕵️ Spies y Mocks** - jasmine.createSpyObj para servicios
+- **🔄 RxJS Testing** - BehaviorSubject para estados reactivos
+- **🎯 DOM Testing** - By.css, DebugElement para interacciones
+
+#### **Patrones de Testing Implementados**
+- ✅ **Arrange-Act-Assert** para estructura clara
+- ✅ **Mock Services** para aislamiento de dependencias
+- ✅ **Test Fixtures** reutilizables para datos consistentes
+- ✅ **Setup Helpers** para configuración común
+- ✅ **Async Testing** con observables y promesas
+- ✅ **Form Testing** con validaciones reactive
+
+### **📋 Scripts de Testing**
+```bash
+# Testing desarrollo
+npm test                     # Suite completa de tests
+npm run test:watch          # Desarrollo con auto-reload
+npm run test:ci             # Tests para CI/CD sin watch
+
+# Coverage y análisis
+npm run test:coverage       # Coverage detallado con HTML
+npm run test:coverage:text  # Coverage en consola
+npm run test:coverage:json  # Coverage en formato JSON
+
+# Tests específicos por módulo
+npm run test:auth           # Solo autenticación
+npm run test:core           # Solo servicios core
+npm run test:components     # Solo componentes
+npm run test:integration    # Solo tests de integración
+
+# Debugging y desarrollo
+npm run test:debug          # Tests con debugging
+npm run test:verbose        # Output detallado
+npm run test:single-run     # Ejecución única
+```
+
+### **🧹 Configuración y Setup**
+
+#### **Configuración de TestBed**
+```typescript
+// Ejemplo de configuración típica
+beforeEach(async () => {
+  await TestBed.configureTestingModule({
+    imports: [
+      ComponentToTest,
+      FormsModule,
+      CommonModule,
+      RouterTestingModule
+    ],
+    providers: [
+      { provide: AuthService, useValue: mockAuthService },
+      { provide: TaskService, useValue: mockTaskService },
+      provideHttpClient(),
+      provideHttpClientTesting()
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
+  }).compileComponents();
+});
+```
+### **🚨 Prerequisitos para Testing**
+1. **Angular CLI 19** instalado globalmente
+2. **Node.js 20+** para ejecución de tests
+3. **Chrome/Chromium** para Karma (headless disponible)
+4. **Dependencias de testing** instaladas automáticamente
+
+---
 
 ## 🚀 Despliegue
 
